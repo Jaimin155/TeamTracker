@@ -149,7 +149,7 @@
                             <div class="col-8 mx-auto">
                                 <center>
                                     <div class="form-group">
-                                        <asp:Button class="btn btn-primary btn-block btn-md mt-3" ID="Button1" runat="server" Text="Update" />
+                                        <asp:Button class="btn btn-primary btn-block btn-md mt-3" ID="Button1" runat="server" Text="Update" onClick="Button1_Click" />
                                     </div>
                                 </center>
                             </div>
