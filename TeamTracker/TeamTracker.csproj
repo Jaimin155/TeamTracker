@@ -177,6 +177,13 @@
     <Compile Include="EMS\userLogin.aspx.designer.cs">
       <DependentUpon>userLogin.aspx</DependentUpon>
     </Compile>
+    <Compile Include="EMS\userManagement.aspx.cs">
+      <DependentUpon>userManagement.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EMS\userManagement.aspx.designer.cs">
+      <DependentUpon>userManagement.aspx</DependentUpon>
+    </Compile>
     <Compile Include="EMS\userProfile.aspx.cs">
       <DependentUpon>userProfile.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -2339,6 +2346,7 @@
     <Content Include="EMS\homepage.aspx" />
     <Content Include="EMS\terms.aspx" />
     <Content Include="EMS\userLogin.aspx" />
+    <Content Include="EMS\userManagement.aspx" />
     <Content Include="EMS\userProfile.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />

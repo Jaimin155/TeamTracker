@@ -26,13 +26,24 @@ namespace TeamTracker.EMS
                 {
                     con.Open();
                 }
-                SqlCommand cmd = new SqlCommand("INSERT INTO admin_login_tbl(admin_id,password) VALUE (@admin_id,@password)",con);
-                cmd.Parameters.AddWithValue("@admin_id", TextBox1.Text.Trim());
-                cmd.Parameters.AddWithValue("@password", TextBox2.Text.Trim());
-
-                cmd.ExecuteNonQuery();
-                con.Close();
-                Response.Write("<script>alert('Login Successfully');</script>");
+                SqlCommand cmd = new SqlCommand("SELECT * FROM admin_login_tbl WHERE admin_id='" + TextBox1.Text.Trim() + "' AND password= '" + TextBox2.Text.Trim() + "'", con);
+                SqlDataReader dr = cmd.ExecuteReader();
+                if (dr.HasRows)
+                {
+                    while (dr.Read())
+                    {
+                        //Response.Write("<script>alert('" + dr.GetValue(0).ToString() + "');</script>");
+                        Response.Write("<script>alert('Login Successfully');</script>");
+                        Session["username"] = dr.GetValue(0).ToString();
+                        //Session["fullname"]=dr.GetValue(8).ToString();
+                        Session["role"] = "admin";
+                    }
+                    Response.Redirect("homepage.aspx");
+                }
+                else
+                {
+                    Response.Write("<script>alert('Invalid Credentials');</script>)");
+                }
             }
             catch (Exception ex)
             {
