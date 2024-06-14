@@ -34,7 +34,7 @@ namespace TeamTracker.EMS
                     {
                         Response.Write("<script>alert('Login Successfully');</script>");
                         Session["username"]=dr.GetValue(0).ToString();
-                        //Session["fullname"]=dr.GetValue(8).ToString();
+                        Session["fullname"]=dr.GetValue(2).ToString();
                         Session["role"] = "user";
                     }
                     Response.Redirect("homepage.aspx");

@@ -13,7 +13,7 @@ namespace TeamTracker.EMS
         {
             try
             {
-                if (Session["role"].Equals(""))
+                if (Session["role"]!=null && Session["role"].Equals(""))
                 {
                     LinkButton1.Visible = false; //user PRofile
                     LinkButton2.Visible = true; //user login
@@ -23,18 +23,18 @@ namespace TeamTracker.EMS
                     LinkButton6.Visible = false; //user management
                     LinkButton7.Visible = false; //user profile
                 }
-                else if (Session["role"].Equals("user"))
+                else if (Session["role"] != null && Session["role"].Equals("user"))
                 {
                     LinkButton1.Visible = true; //user PRofile
                     LinkButton2.Visible = false; //user login
                     LinkButton3.Visible = true; //logout login
                     LinkButton4.Visible = true; //hello user login
-                    LinkButton4.Text = "Hello "+Session["username"].ToString();
+                    LinkButton4.Text = "Hello "+Session["fullname"].ToString();
                     LinkButton5.Visible = true; //adimin login
                     LinkButton6.Visible = false; //user management
                     LinkButton7.Visible = false; //user profile
                 }
-                else if (Session["role"].Equals("admin"))
+                else if (Session["role"] != null && Session["role"].Equals("admin"))
                 {
                     LinkButton1.Visible = false; //user PRofile
                     LinkButton2.Visible = false; //user login
@@ -62,7 +62,7 @@ namespace TeamTracker.EMS
         protected void LinkButton3_Click(object sender, EventArgs e)
         {
             Session["username"] = "";
-            //Session["fullname"]=dr.GetValue(8).ToString();
+            Session["fullname"]="";
             Session["role"] = "";
             LinkButton1.Visible = false; //user PRofile
             LinkButton2.Visible = true; //user login

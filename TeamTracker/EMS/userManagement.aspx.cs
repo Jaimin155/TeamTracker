@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Ajax.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -17,7 +18,6 @@ namespace TeamTracker.EMS
         {
             GridView1.DataBind();
         }
-
         //go button 
         protected void Button1_Click(object sender, EventArgs e)
         {
@@ -55,13 +55,13 @@ namespace TeamTracker.EMS
         {
             if (checkIfuserExists())
             {
-                deleteUser();   
+                deleteUser();
             }
             else
             {
                 Response.Write("<script>alert('Employee Id doesn't Exists');</script>");
             }
-        }        
+        }
 
         //user defined function        
         void getUserByID()
@@ -73,14 +73,14 @@ namespace TeamTracker.EMS
                 {
                     con.Open();
                 }
-                SqlCommand cmd = new SqlCommand("SELECT * FROM user_login_tbl WHERE user_id='"+TextBox1.Text.Trim()+"';",con);
+                SqlCommand cmd = new SqlCommand("SELECT * FROM user_login_tbl WHERE user_id='" + TextBox1.Text.Trim() + "';", con);
                 SqlDataAdapter da = new SqlDataAdapter(cmd);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
 
                 if (dt.Rows.Count >= 1)
                 {
-                    TextBox2.Text = dt.Rows[0][1].ToString();
+                    TextBox2.Text = dt.Rows[0][2].ToString();
                 }
                 else
                 {
@@ -101,7 +101,7 @@ namespace TeamTracker.EMS
                 {
                     con.Open();
                 }
-                SqlCommand cmd = new SqlCommand("DELETE FROM user_login_tbl WHERE user_id='"+TextBox1.Text.Trim()+"' ", con);
+                SqlCommand cmd = new SqlCommand("DELETE FROM user_login_tbl WHERE user_id='" + TextBox1.Text.Trim() + "' ", con);
 
                 cmd.ExecuteNonQuery();
                 con.Close();
@@ -123,9 +123,10 @@ namespace TeamTracker.EMS
                 {
                     con.Open();
                 }
-                SqlCommand cmd = new SqlCommand("UPDATE user_login_tbl SET user_name=@user_name WHERE user_id='"+TextBox1.Text.Trim()+"'", con);
+                SqlCommand cmd = new SqlCommand("UPDATE user_login_tbl SET user_name=@user_name,password=@password WHERE user_id='" + TextBox1.Text.Trim() + "'", con);
                 cmd.Parameters.AddWithValue("@user_name", TextBox2.Text.Trim());
-
+                cmd.Parameters.AddWithValue("@password",TextBox2.Text.Trim().ToUpper().Substring(0,1) + TextBox2.Text.Trim().ToLower().Substring(1, 1) + "@" + TextBox1.Text.Trim().Substring(2,3));
+                
                 cmd.ExecuteNonQuery();
                 con.Close();
                 Response.Write("<script>alert('User updated Successfully');</script>");
@@ -148,8 +149,8 @@ namespace TeamTracker.EMS
                 }
                 SqlCommand cmd = new SqlCommand("INSERT INTO user_login_tbl (user_id,password,user_name) VALUES (@user_id,@password,@user_name)", con);
                 cmd.Parameters.AddWithValue("@user_id", TextBox1.Text.Trim());
-                cmd.Parameters.AddWithValue("@password","123456");
                 cmd.Parameters.AddWithValue("@user_name", TextBox2.Text.Trim());
+                cmd.Parameters.AddWithValue("@password", TextBox2.Text.Trim().ToUpper().Substring(0,1) + TextBox2.Text.Trim().ToLower().Substring(1, 1) + "@" + TextBox1.Text.Trim().Substring(2,3));
 
                 cmd.ExecuteNonQuery();
                 con.Close();
@@ -171,7 +172,7 @@ namespace TeamTracker.EMS
                 {
                     con.Open();
                 }
-                SqlCommand cmd = new SqlCommand("SELECT * FROM user_login_tbl WHERE user_id='" + TextBox1.Text.Trim() + "';", con);
+                SqlCommand cmd = new SqlCommand("SELECT * FROM user_login_tbl WHERE user_id = '" + TextBox1.Text.Trim() + "';", con);
                 SqlDataAdapter da = new SqlDataAdapter(cmd);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
@@ -196,5 +197,6 @@ namespace TeamTracker.EMS
             TextBox1.Text = "";
             TextBox2.Text = "";
         }
+
     }
 }

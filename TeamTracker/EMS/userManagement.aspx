@@ -1,6 +1,7 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/EMS/Site1.Master" AutoEventWireup="true" CodeBehind="userManagement.aspx.cs" Inherits="TeamTracker.EMS.userManagement" %>
+
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <script type = "text/javascript">
+    <script type="text/javascript">
         $(document).ready(function () {
             //$('.table').DataTable();
             $(".table").prepend($("<thead></thead>").append($(this).find("tr:first"))).dataTable();
@@ -38,26 +39,30 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <asp:TextBox CssClass="form-control" ID="TextBox1" runat="server" placeholder="Employee Id"></asp:TextBox>
-                                        <asp:Button class="btn btn-primary " ID="Button1" runat="server" Text="Go" />
+                                        <asp:Button ID="Button1" runat="server" Text="Go" CssClass="btn btn-primary" OnClick="Button1_Click" />
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-8">
+                            
+                            
+                                <div class="col-md-8">
                                 <label>Employee Name</label>
                                 <div class="form-group">
                                     <asp:TextBox CssClass="form-control" ID="TextBox2" runat="server" placeholder="Employee Name"></asp:TextBox>
                                 </div>
+                            
+
+                            </div>      
                             </div>
-                        </div>
                         <div class="row">
                             <div class="col-4">
-                                <asp:Button ID="Button2" CssClass="btn btn-mx btn-block btn-success" runat="server" Text="Add" />
+                                <asp:Button ID="Button2" runat="server" Text="Add" CssClass="btn btn-mx btn-block btn-success" OnClick="Button2_Click" />
                             </div>
                             <div class="col-4">
-                                <asp:Button ID="Button3" CssClass="btn btn-mx btn-block btn-warning" runat="server" Text="Update" />
+                                <asp:Button ID="Button3" runat="server" Text="Update" CssClass="btn btn-mx btn-block btn-warning" OnClick="Button3_Click" />
                             </div>
                             <div class="col-4">
-                                <asp:Button ID="Button4" CssClass="btn btn-mx btn-block btn-danger" runat="server" Text="Delete" />
+                                <asp:Button ID="Button4" runat="server" Text="Delete" CssClass="btn btn-mx btn-block btn-danger" OnClick="Button4_Click" />
                             </div>
                         </div>
                     </div>
@@ -81,13 +86,13 @@
                             </div>
                         </div>
                         <div class="row">
-                            <asp:SqlDataSource ID="SqlDataSource1" runat="server" ConnectionString="<%$ ConnectionStrings:emsDBConnectionString %>" SelectCommand="SELECT * FROM [user_login_tbl]"></asp:SqlDataSource>
+                            <asp:SqlDataSource ID="SqlDataSource1" runat="server" ConnectionString="<%$ ConnectionStrings:emsDBConnectionString %>" ProviderName="<%$ ConnectionStrings:emsDBConnectionString.ProviderName %>" SelectCommand="SELECT * FROM [user_login_tbl]"></asp:SqlDataSource>
                             <div class="col">
-                                <asp:GridView class="table table-striped table-bordered" ID="GridView1" runat="server" AutoGenerateColumns="False" DataKeyNames="user_id" DataSourceID="SqlDataSource1">
+                                <asp:GridView class="table table-striped table-bordered" ID="GridView1" runat="server" DataSourceID="SqlDataSource1" AutoGenerateColumns="False" DataKeyNames="user_id">
                                     <Columns>
-                                        <asp:BoundField DataField="user_id" HeaderText="user_id" ReadOnly="True" SortExpression="user_id" />
-                                        <asp:BoundField DataField="password" HeaderText="password" SortExpression="password" />
-                                        <asp:BoundField DataField="user_name" HeaderText="user_name" SortExpression="user_name" />
+                                        <asp:BoundField DataField="user_id" HeaderText="user_id" ReadOnly="True" SortExpression="user_id"></asp:BoundField>
+                                        <asp:BoundField DataField="password" HeaderText="password" SortExpression="password"></asp:BoundField>
+                                        <asp:BoundField DataField="user_name" HeaderText="user_name" SortExpression="user_name"></asp:BoundField>
                                     </Columns>
                                 </asp:GridView>
                             </div>
