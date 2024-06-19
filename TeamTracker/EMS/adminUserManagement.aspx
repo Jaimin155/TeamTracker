@@ -1,11 +1,17 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/EMS/Site1.Master" AutoEventWireup="true" CodeBehind="adminUserManagement.aspx.cs" Inherits="TeamTracker.EMS.adminUserManagement" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //$('.table').DataTable();
+            $(".table").prepend($("<thead></thead>").append($(this).find("tr:first"))).dataTable();
+        });
+    </script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-5">
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
@@ -33,7 +39,7 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <asp:TextBox CssClass="form-control" ID="TextBox1" runat="server" placeholder="User ID"></asp:TextBox>
-                                        <asp:LinkButton class="btn btn-primary" ID="LinkButton4" runat="server"><i class="fas fa-check-circle"></i></asp:LinkButton>
+                                        <asp:LinkButton class="btn btn-primary" ID="LinkButton4" runat="server" OnClick="LinkButton4_Click"><i class="fas fa-check-circle"></i></asp:LinkButton>
                                     </div>
                                 </div>
                             </div>
@@ -48,9 +54,9 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <asp:TextBox CssClass="form-control mr-1" ID="TextBox7" runat="server" placeholder="Account Status" ReadOnly="True"></asp:TextBox>
-                                        <asp:LinkButton class="btn btn-success mr-1" ID="LinkButton1" runat="server"><i class="fas fa-check-circle"></i></asp:LinkButton>
-                                        <asp:LinkButton class="btn btn-warning mr-1" ID="LinkButton2" runat="server"><i class="far fa-pause-circle"></i></asp:LinkButton>
-                                        <asp:LinkButton class="btn btn-danger mr-1" ID="LinkButton3" runat="server"><i class="fas fa-times-circle"></i></asp:LinkButton>
+                                        <asp:LinkButton class="btn btn-danger mr-1" ID="LinkButton1" runat="server" OnClick="LinkButton1_Click"><i class="far fa-pause-circle"></i></asp:LinkButton>
+                                        <asp:LinkButton class="btn btn-warning mr-1" ID="LinkButton2" runat="server" OnClick="LinkButton2_Click"><i class="fas fa-house-laptop"></i></asp:LinkButton>
+                                        <asp:LinkButton class="btn btn-success mr-1" ID="LinkButton3" runat="server" OnClick="LinkButton3_Click"><i class="fas fa-briefcase"></i></asp:LinkButton>
                                     </div>
                                 </div>
                             </div>
@@ -105,7 +111,7 @@
                         </div>
                         <div class="row">
                             <div class="col-8 mx-auto">
-                                <asp:Button ID="Button2" class="btn btn-md btn-block btn-danger" runat="server" Text="Delete Employee Permanently" />
+                                <asp:Button ID="Button2" class="btn btn-md btn-block btn-danger" runat="server" OnClick="Button2_Click" Text="Delete Employee Permanently" />
                             </div>
                         </div>
                     </div>
@@ -113,7 +119,7 @@
                 <a href="homepage.aspx"><< Back to Home</a><br>
                 <br>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-7">
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
@@ -129,8 +135,19 @@
                             </div>
                         </div>
                         <div class="row">
+                            <asp:SqlDataSource ID="SqlDataSource1" runat="server" ConnectionString="<%$ ConnectionStrings:emsDBConnectionString %>" SelectCommand="SELECT * FROM [employee_master_tbl]"></asp:SqlDataSource>
                             <div class="col">
-                                <asp:GridView class="table table-striped table-bordered" ID="GridView1" runat="server"></asp:GridView>
+                                <asp:GridView class="table table-striped table-bordered" ID="GridView1" runat="server" DataSourceID="SqlDataSource1" AutoGenerateColumns="False" DataKeyNames="user_id">
+                                    <Columns>
+                                        <asp:BoundField DataField="user_id" HeaderText="Employee Id" ReadOnly="True" SortExpression="user_id"></asp:BoundField>
+                                        <asp:BoundField DataField="full_name" HeaderText="Name" SortExpression="full_name"></asp:BoundField>
+                                        <asp:BoundField DataField="account_status" HeaderText="Status" SortExpression="account_status"></asp:BoundField>
+                                        <asp:BoundField DataField="contact_no" HeaderText="Contact No" SortExpression="contact_no"></asp:BoundField>
+                                        <asp:BoundField DataField="email" HeaderText="Email" SortExpression="email"></asp:BoundField>
+                                        <asp:BoundField DataField="state" HeaderText="State" SortExpression="state"></asp:BoundField>
+                                        <asp:BoundField DataField="city" HeaderText="City" SortExpression="city"></asp:BoundField>                                        
+                                    </Columns>
+                                </asp:GridView>
                             </div>
                         </div>
                     </div>

@@ -88,11 +88,10 @@
                         <div class="row">
                             <asp:SqlDataSource ID="SqlDataSource1" runat="server" ConnectionString="<%$ ConnectionStrings:emsDBConnectionString %>" ProviderName="<%$ ConnectionStrings:emsDBConnectionString.ProviderName %>" SelectCommand="SELECT * FROM [user_login_tbl]"></asp:SqlDataSource>
                             <div class="col">
-                                <asp:GridView class="table table-striped table-bordered" ID="GridView1" runat="server" DataSourceID="SqlDataSource1" AutoGenerateColumns="False" DataKeyNames="user_id">
+                                <asp:GridView class="table table-striped table-bordered dt-responsive" ID="GridView1" runat="server" DataSourceID="SqlDataSource1" AutoGenerateColumns="False" DataKeyNames="user_id">
                                     <Columns>
-                                        <asp:BoundField DataField="user_id" HeaderText="user_id" ReadOnly="True" SortExpression="user_id"></asp:BoundField>
-                                        <asp:BoundField DataField="password" HeaderText="password" SortExpression="password"></asp:BoundField>
-                                        <asp:BoundField DataField="user_name" HeaderText="user_name" SortExpression="user_name"></asp:BoundField>
+                                        <asp:BoundField DataField="user_id" HeaderText="Employee ID" ReadOnly="True" SortExpression="user_id"></asp:BoundField>
+                                        <asp:BoundField DataField="user_name" HeaderText="Employee Name" SortExpression="user_name"></asp:BoundField>
                                     </Columns>
                                 </asp:GridView>
                             </div>

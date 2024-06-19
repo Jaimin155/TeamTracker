@@ -102,8 +102,11 @@ namespace TeamTracker.EMS
                     con.Open();
                 }
                 SqlCommand cmd = new SqlCommand("DELETE FROM user_login_tbl WHERE user_id='" + TextBox1.Text.Trim() + "' ", con);
-
                 cmd.ExecuteNonQuery();
+
+                SqlCommand cmd2 = new SqlCommand("DELETE FROM employee_master_tbl WHERE user_id='" + TextBox1.Text.Trim() + "' ", con);
+                cmd2.ExecuteNonQuery();
+
                 con.Close();
                 Response.Write("<script>alert('User deleted Successfully');</script>");
                 clearForm();
@@ -125,9 +128,14 @@ namespace TeamTracker.EMS
                 }
                 SqlCommand cmd = new SqlCommand("UPDATE user_login_tbl SET user_name=@user_name,password=@password WHERE user_id='" + TextBox1.Text.Trim() + "'", con);
                 cmd.Parameters.AddWithValue("@user_name", TextBox2.Text.Trim());
-                cmd.Parameters.AddWithValue("@password",TextBox2.Text.Trim().ToUpper().Substring(0,1) + TextBox2.Text.Trim().ToLower().Substring(1, 1) + "@" + TextBox1.Text.Trim().Substring(2,3));
-                
+                cmd.Parameters.AddWithValue("@password",TextBox2.Text.Trim().ToUpper().Substring(0,1) + TextBox2.Text.Trim().ToLower().Substring(1, 1) + "@" + TextBox1.Text.Trim().Substring(2,3));                
                 cmd.ExecuteNonQuery();
+
+                SqlCommand cmd2 = new SqlCommand("UPDATE employee_master_tbl SET full_name=@full_name,password=@password WHERE user_id='" + TextBox1.Text.Trim() + "'", con);
+                cmd2.Parameters.AddWithValue("@full_name", TextBox2.Text.Trim());
+                cmd2.Parameters.AddWithValue("@password",TextBox2.Text.Trim().ToUpper().Substring(0,1) + TextBox2.Text.Trim().ToLower().Substring(1, 1) + "@" + TextBox1.Text.Trim().Substring(2,3));                
+                cmd2.ExecuteNonQuery();
+
                 con.Close();
                 Response.Write("<script>alert('User updated Successfully');</script>");
                 clearForm();
@@ -151,8 +159,13 @@ namespace TeamTracker.EMS
                 cmd.Parameters.AddWithValue("@user_id", TextBox1.Text.Trim());
                 cmd.Parameters.AddWithValue("@user_name", TextBox2.Text.Trim());
                 cmd.Parameters.AddWithValue("@password", TextBox2.Text.Trim().ToUpper().Substring(0,1) + TextBox2.Text.Trim().ToLower().Substring(1, 1) + "@" + TextBox1.Text.Trim().Substring(2,3));
-
                 cmd.ExecuteNonQuery();
+
+                SqlCommand cmd2 = new SqlCommand("INSERT INTO employee_master_tbl (user_id,password,full_name) VALUES (@user_id,@password,@full_name)", con);
+                cmd2.Parameters.AddWithValue("@user_id", TextBox1.Text.Trim());
+                cmd2.Parameters.AddWithValue("@full_name", TextBox2.Text.Trim());
+                cmd2.Parameters.AddWithValue("@password", TextBox2.Text.Trim().ToUpper().Substring(0,1) + TextBox2.Text.Trim().ToLower().Substring(1, 1) + "@" + TextBox1.Text.Trim().Substring(2,3));
+                cmd2.ExecuteNonQuery();
                 con.Close();
                 Response.Write("<script>alert('User added Successfully');</script>");
                 clearForm();
