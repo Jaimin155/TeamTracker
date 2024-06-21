@@ -22,6 +22,9 @@ namespace TeamTracker.EMS
                     LinkButton5.Visible = true; //adimin login
                     LinkButton6.Visible = false; //user management
                     LinkButton7.Visible = false; //user profile
+                    LinkButton8.Visible = false; //employee salary info
+                    LinkButton9.Visible = false; //employee attendance
+                    LinkButton10.Visible = false; //attendance form
                 }
                 else if (Session["role"] != null && Session["role"].Equals("user"))
                 {
@@ -33,6 +36,9 @@ namespace TeamTracker.EMS
                     LinkButton5.Visible = true; //adimin login
                     LinkButton6.Visible = false; //user management
                     LinkButton7.Visible = false; //user profile
+                    LinkButton8.Visible=false; //employee salary info
+                    LinkButton9.Visible = false; //employee attendance
+                    LinkButton10.Visible = true; //attendance form
                 }
                 else if (Session["role"] != null && Session["role"].Equals("admin"))
                 {
@@ -44,6 +50,9 @@ namespace TeamTracker.EMS
                     LinkButton5.Visible = false; //adimin login
                     LinkButton6.Visible = true; //user management
                     LinkButton7.Visible = true; //user profile
+                    LinkButton8.Visible = true; //employee salary info
+                    LinkButton9.Visible = true; //employee attendance
+                    LinkButton10.Visible = false; //attendance form
                 }
             }
             catch(Exception ex)
@@ -88,6 +97,18 @@ namespace TeamTracker.EMS
         protected void LinkButton7_Click(object sender, EventArgs e)
         {
             Response.Redirect("adminUserManagement.aspx");
+        }
+        protected void LinkButton8_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("employeeSalary.aspx");
+        }
+        protected void LinkButton9_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("attendanceManagement.aspx");
+        } 
+        protected void LinkButton10_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("attendancePage.aspx");
         }
     }
 }

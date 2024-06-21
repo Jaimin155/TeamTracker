@@ -140,12 +140,33 @@
     <Compile Include="EMS\adminUserManagement.aspx.designer.cs">
       <DependentUpon>adminUserManagement.aspx</DependentUpon>
     </Compile>
+    <Compile Include="EMS\attendanceManagement.aspx.cs">
+      <DependentUpon>attendanceManagement.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EMS\attendanceManagement.aspx.designer.cs">
+      <DependentUpon>attendanceManagement.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="EMS\attendancePage.aspx.cs">
+      <DependentUpon>attendancePage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EMS\attendancePage.aspx.designer.cs">
+      <DependentUpon>attendancePage.aspx</DependentUpon>
+    </Compile>
     <Compile Include="EMS\contactUs.aspx.cs">
       <DependentUpon>contactUs.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="EMS\contactUs.aspx.designer.cs">
       <DependentUpon>contactUs.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="EMS\employeeSalary.aspx.cs">
+      <DependentUpon>employeeSalary.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EMS\employeeSalary.aspx.designer.cs">
+      <DependentUpon>employeeSalary.aspx</DependentUpon>
     </Compile>
     <Compile Include="EMS\homepage.aspx.cs">
       <DependentUpon>homepage.aspx</DependentUpon>
@@ -2341,7 +2362,10 @@
     <Content Include="EMS\aboutUs.aspx" />
     <Content Include="EMS\adminLogin.aspx" />
     <Content Include="EMS\adminUserManagement.aspx" />
+    <Content Include="EMS\attendanceManagement.aspx" />
+    <Content Include="EMS\attendancePage.aspx" />
     <Content Include="EMS\contactUs.aspx" />
+    <Content Include="EMS\employeeSalary.aspx" />
     <Content Include="EMS\homepage.aspx" />
     <Content Include="EMS\terms.aspx" />
     <Content Include="EMS\userLogin.aspx" />
