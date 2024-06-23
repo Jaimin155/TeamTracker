@@ -15,20 +15,12 @@ namespace TeamTracker.EMS
         {
             if (!IsPostBack)
             {
-                if (Session["PunchedIn"] != null && Convert.ToBoolean(Session["PunchedIn"]))
-                {
-                    // Hide PunchIn and show PunchOut
-                    punchInDiv.Visible = false;
-                    punchOutDiv.Visible = true;
-                }
-                else
-                {
-                    // Show PunchIn and hide PunchOut
-                    punchInDiv.Visible = true;
-                    punchOutDiv.Visible = false;
-                }
+                CheckAndAddMissedPunchOuts();
+                MarkAbsentForMissedPunchIns();
+                CheckPunchStatus();
             }
         }
+
         protected void Button1_Click(object sender, EventArgs e)
         {
             if (CheckIfAlreadyPunchedIn())
@@ -39,7 +31,7 @@ namespace TeamTracker.EMS
 
             if (PunchIn())
             {
-                Session["PunchedIn"] = true; // Set session variable
+                Session["PunchedIn"] = true;
                 punchInDiv.Visible = false;
                 punchOutDiv.Visible = true;
             }
@@ -60,7 +52,7 @@ namespace TeamTracker.EMS
             }
 
             PunchOut();
-            Session["PunchedIn"] = false; // Reset session variable
+            Session["PunchedIn"] = false;
             punchInDiv.Visible = true;
             punchOutDiv.Visible = false;
         }
@@ -69,7 +61,6 @@ namespace TeamTracker.EMS
         {
             try
             {
-                // Check if FileUpload control has a file
                 if (FileUpload1.HasFile)
                 {
                     byte[] imageData = null;
@@ -84,7 +75,7 @@ namespace TeamTracker.EMS
                         {
                             con.Open();
                         }
-                        using (SqlCommand cmd = new SqlCommand("INSERT INTO attendanceManagement_tbl (full_name,user_id, status, date, punchIn_time,note,image) VALUES (@full_name,@user_id, @status, @date, @punchIn_time,@note,@image)", con))
+                        using (SqlCommand cmd = new SqlCommand("INSERT INTO attendanceManagement_tbl (user_id, full_name, status, date, punchIn_time, note, image) VALUES (@user_id, @full_name, @status, @date, @punchIn_time, @note, @image)", con))
                         {
                             cmd.Parameters.AddWithValue("@user_id", Session["username"]);
                             cmd.Parameters.AddWithValue("@full_name", Session["fullname"]);
@@ -201,6 +192,104 @@ namespace TeamTracker.EMS
                 Response.Write("<script>alert('" + ex.Message + "');</script>");
             }
             return false;
+        }
+
+        void CheckAndAddMissedPunchOuts()
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(strcon))
+                {
+                    if (con.State == ConnectionState.Closed)
+                    {
+                        con.Open();
+                    }
+                    using (SqlCommand cmd = new SqlCommand("UPDATE attendanceManagement_tbl SET punchOut_time = @defaultPunchOutTime WHERE punchOut_time IS NULL AND date < @currentDate", con))
+                    {
+                        cmd.Parameters.AddWithValue("@defaultPunchOutTime", "23:59:59");
+                        cmd.Parameters.AddWithValue("@currentDate", DateTime.Now.ToString("yyyy-MM-dd"));
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response.Write("<script>alert('" + ex.Message + "');</script>");
+            }
+        }
+
+        void MarkAbsentForMissedPunchIns()
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(strcon))
+                {
+                    if (con.State == ConnectionState.Closed)
+                    {
+                        con.Open();
+                    }
+
+                    // Identify the users who have not punched in today
+                    using (SqlCommand cmd = new SqlCommand("SELECT user_id FROM user_login_tbl WHERE user_id NOT IN (SELECT user_id FROM attendanceManagement_tbl WHERE date = @currentDate)", con))
+                    {
+                        cmd.Parameters.AddWithValue("@currentDate", DateTime.Now.ToString("yyyy-MM-dd"));
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string userId = reader["user_id"].ToString();
+                                MarkUserAbsent(userId);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response.Write("<script>alert('" + ex.Message + "');</script>");
+            }
+        }
+
+        void MarkUserAbsent(string userId)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(strcon))
+                {
+                    if (con.State == ConnectionState.Closed)
+                    {
+                        con.Open();
+                    }
+
+                    using (SqlCommand cmd = new SqlCommand("INSERT INTO attendanceManagement_tbl (user_id, full_name, status, date, punchIn_time, punchOut_time) VALUES (@user_id, (SELECT user_name FROM user_login_tbl WHERE user_id = @user_id), @status, @date, NULL, NULL)", con))
+                    {
+                        cmd.Parameters.AddWithValue("@user_id", userId);
+                        cmd.Parameters.AddWithValue("@status", "Absent");
+                        cmd.Parameters.AddWithValue("@date", DateTime.Now.ToString("yyyy-MM-dd"));
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response.Write("<script>alert('" + ex.Message + "');</script>");
+            }
+        }
+
+        void CheckPunchStatus()
+        {
+            if (CheckIfAlreadyPunchedIn() && !CheckIfAlreadyPunchedOut())
+            {
+                punchInDiv.Visible = false;
+                punchOutDiv.Visible = true;
+                Session["PunchedIn"] = true;
+            }
+            else
+            {
+                punchInDiv.Visible = true;
+                punchOutDiv.Visible = false;
+                Session["PunchedIn"] = false;
+            }
         }
     }
 }
