@@ -15,8 +15,6 @@ namespace TeamTracker.EMS
         {
             if (!IsPostBack)
             {
-                CheckAndAddMissedPunchOuts();
-                MarkAbsentForMissedPunchIns();
                 CheckPunchStatus();
             }
         }
@@ -75,13 +73,17 @@ namespace TeamTracker.EMS
                         {
                             con.Open();
                         }
+
+                        DateTime punchInTime = DateTime.Now;
+                        string status = GetPunchInStatus(punchInTime);
+
                         using (SqlCommand cmd = new SqlCommand("INSERT INTO attendanceManagement_tbl (user_id, full_name, status, date, punchIn_time, note, image) VALUES (@user_id, @full_name, @status, @date, @punchIn_time, @note, @image)", con))
                         {
                             cmd.Parameters.AddWithValue("@user_id", Session["username"]);
                             cmd.Parameters.AddWithValue("@full_name", Session["fullname"]);
-                            cmd.Parameters.AddWithValue("@status", "Present");
-                            cmd.Parameters.AddWithValue("@date", DateTime.Now.ToString("yyyy-MM-dd"));
-                            cmd.Parameters.AddWithValue("@punchIn_time", DateTime.Now.ToString("HH:mm:ss"));
+                            cmd.Parameters.AddWithValue("@status", status);
+                            cmd.Parameters.AddWithValue("@date", punchInTime.ToString("yyyy-MM-dd"));
+                            cmd.Parameters.AddWithValue("@punchIn_time", punchInTime.ToString("HH:mm:ss"));
                             cmd.Parameters.AddWithValue("@note", TextBox1.Text.Trim());
                             cmd.Parameters.AddWithValue("@image", imageData);
                             int rowsAffected = cmd.ExecuteNonQuery();
@@ -119,19 +121,52 @@ namespace TeamTracker.EMS
                     {
                         con.Open();
                     }
-                    using (SqlCommand cmd = new SqlCommand("UPDATE attendanceManagement_tbl SET punchOut_time=@punchOut_time WHERE user_id=@user_id AND date=@date", con))
+
+                    DateTime punchOutTime = DateTime.Now;
+
+                    using (SqlCommand cmd = new SqlCommand("SELECT punchIn_time FROM attendanceManagement_tbl WHERE user_id=@user_id AND date=@date", con))
                     {
                         cmd.Parameters.AddWithValue("@user_id", Session["username"]);
-                        cmd.Parameters.AddWithValue("@date", DateTime.Now.ToString("yyyy-MM-dd"));
-                        cmd.Parameters.AddWithValue("@punchOut_time", DateTime.Now.ToString("HH:mm:ss"));
-                        int rowsAffected = cmd.ExecuteNonQuery();
-                        if (rowsAffected > 0)
+                        cmd.Parameters.AddWithValue("@date", punchOutTime.ToString("yyyy-MM-dd"));
+                        object result = cmd.ExecuteScalar();
+
+                        if (result != null)
                         {
-                            Response.Write("<script>alert('Punch Out Successfully');</script>");
-                        }
-                        else
-                        {
-                            Response.Write("<script>alert('Something went wrong in Punching Out!');</script>");
+                            DateTime punchInTime;
+                            if (DateTime.TryParse(result.ToString(), out punchInTime))
+                            {
+                                string status = GetPunchOutStatus(punchInTime, punchOutTime);
+
+                                // Calculate overtime
+                                TimeSpan overtime = TimeSpan.Zero;
+                                if (punchOutTime.TimeOfDay > TimeSpan.FromHours(16))
+                                {
+                                    overtime = punchOutTime.TimeOfDay - TimeSpan.FromHours(16);
+                                }
+
+                                using (SqlCommand updateCmd = new SqlCommand("UPDATE attendanceManagement_tbl SET punchOut_time=@punchOut_time, status=@status, overtime=@overtime WHERE user_id=@user_id AND date=@date", con))
+                                {
+                                    updateCmd.Parameters.AddWithValue("@punchOut_time", punchOutTime.ToString("HH:mm:ss"));
+                                    updateCmd.Parameters.AddWithValue("@status", status);
+                                    updateCmd.Parameters.AddWithValue("@overtime", overtime.ToString(@"hh\:mm\:ss"));
+                                    updateCmd.Parameters.AddWithValue("@user_id", Session["username"]);
+                                    updateCmd.Parameters.AddWithValue("@date", punchOutTime.ToString("yyyy-MM-dd"));
+
+                                    int rowsAffected = updateCmd.ExecuteNonQuery();
+                                    if (rowsAffected > 0)
+                                    {
+                                        Response.Write("<script>alert('Punch Out Successfully');</script>");
+                                    }
+                                    else
+                                    {
+                                        Response.Write("<script>alert('Something went wrong in Punching Out!');</script>");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Response.Write("<script>alert('Invalid Punch In Time format.');</script>");
+                            }
                         }
                     }
                 }
@@ -141,6 +176,7 @@ namespace TeamTracker.EMS
                 Response.Write("<script>alert('" + ex.Message + "');</script>");
             }
         }
+
 
         bool CheckIfAlreadyPunchedIn()
         {
@@ -194,88 +230,6 @@ namespace TeamTracker.EMS
             return false;
         }
 
-        void CheckAndAddMissedPunchOuts()
-        {
-            try
-            {
-                using (SqlConnection con = new SqlConnection(strcon))
-                {
-                    if (con.State == ConnectionState.Closed)
-                    {
-                        con.Open();
-                    }
-                    using (SqlCommand cmd = new SqlCommand("UPDATE attendanceManagement_tbl SET punchOut_time = @defaultPunchOutTime WHERE punchOut_time IS NULL AND date < @currentDate", con))
-                    {
-                        cmd.Parameters.AddWithValue("@defaultPunchOutTime", "23:59:59");
-                        cmd.Parameters.AddWithValue("@currentDate", DateTime.Now.ToString("yyyy-MM-dd"));
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Response.Write("<script>alert('" + ex.Message + "');</script>");
-            }
-        }
-
-        void MarkAbsentForMissedPunchIns()
-        {
-            try
-            {
-                using (SqlConnection con = new SqlConnection(strcon))
-                {
-                    if (con.State == ConnectionState.Closed)
-                    {
-                        con.Open();
-                    }
-
-                    // Identify the users who have not punched in today
-                    using (SqlCommand cmd = new SqlCommand("SELECT user_id FROM user_login_tbl WHERE user_id NOT IN (SELECT user_id FROM attendanceManagement_tbl WHERE date = @currentDate)", con))
-                    {
-                        cmd.Parameters.AddWithValue("@currentDate", DateTime.Now.ToString("yyyy-MM-dd"));
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                string userId = reader["user_id"].ToString();
-                                MarkUserAbsent(userId);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Response.Write("<script>alert('" + ex.Message + "');</script>");
-            }
-        }
-
-        void MarkUserAbsent(string userId)
-        {
-            try
-            {
-                using (SqlConnection con = new SqlConnection(strcon))
-                {
-                    if (con.State == ConnectionState.Closed)
-                    {
-                        con.Open();
-                    }
-
-                    using (SqlCommand cmd = new SqlCommand("INSERT INTO attendanceManagement_tbl (user_id, full_name, status, date, punchIn_time, punchOut_time) VALUES (@user_id, (SELECT user_name FROM user_login_tbl WHERE user_id = @user_id), @status, @date, NULL, NULL)", con))
-                    {
-                        cmd.Parameters.AddWithValue("@user_id", userId);
-                        cmd.Parameters.AddWithValue("@status", "Absent");
-                        cmd.Parameters.AddWithValue("@date", DateTime.Now.ToString("yyyy-MM-dd"));
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Response.Write("<script>alert('" + ex.Message + "');</script>");
-            }
-        }
-
         void CheckPunchStatus()
         {
             if (CheckIfAlreadyPunchedIn() && !CheckIfAlreadyPunchedOut())
@@ -289,6 +243,109 @@ namespace TeamTracker.EMS
                 punchInDiv.Visible = true;
                 punchOutDiv.Visible = false;
                 Session["PunchedIn"] = false;
+            }
+        }
+
+        string GetPunchInStatus(DateTime punchInTime)
+        {
+            // Check if the current day is a weekend
+            if (punchInTime.DayOfWeek == DayOfWeek.Saturday || punchInTime.DayOfWeek == DayOfWeek.Sunday)
+            {
+                return "Weekend";
+            }
+            else
+            {
+                // If it's a weekday, check if the punch in time is within the working hours
+                return (punchInTime.TimeOfDay >= TimeSpan.FromHours(9) && punchInTime.TimeOfDay <= TimeSpan.FromHours(16)) ? "Present" : "Absent";
+            }
+        }
+
+        string GetPunchOutStatus(DateTime punchInTime, DateTime punchOutTime)
+        {
+            if (punchInTime.DayOfWeek == DayOfWeek.Saturday || punchInTime.DayOfWeek == DayOfWeek.Sunday)
+            {
+                // Calculate overtime if the punch out time is after 16:00:00 on a weekend
+                TimeSpan punchOutTimeOfDay = punchOutTime.TimeOfDay;
+                if (punchOutTimeOfDay > TimeSpan.FromHours(16))
+                {
+                    return "Overtime";
+                }
+                else
+                {
+                    return "Present";
+                }
+            }
+            else
+            {
+                // If it's a weekday, calculate overtime if the punch out time is after 16:00:00
+                TimeSpan punchOutTimeOfDay = punchOutTime.TimeOfDay;
+                if (punchOutTimeOfDay > TimeSpan.FromHours(16))
+                {
+                    return "Overtime";
+                }
+                else
+                {
+                    return "Present";
+                }
+            }
+        }
+
+        public void MarkAbsentForMissedPunchIns()
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(strcon))
+                {
+                    if (con.State == ConnectionState.Closed)
+                    {
+                        con.Open();
+                    }
+
+                    // Fetch users who have not punched in by 16:00:00
+                    string query = "SELECT user_id, full_name FROM attendanceManagement_tbl WHERE punchIn_time IS NULL AND date = @date AND status <> 'Weekend'";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@date", DateTime.Now.ToString("yyyy-MM-dd"));
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string userId = reader["user_id"].ToString();
+                                string fullName = reader["full_name"].ToString();
+                                MarkUserAbsent(userId, fullName);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response.Write("<script>alert('" + ex.Message + "');</script>");
+            }
+        }
+
+        void MarkUserAbsent(string userId, string fullName)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(strcon))
+                {
+                    if (con.State == ConnectionState.Closed)
+                    {
+                        con.Open();
+                    }
+
+                    using (SqlCommand cmd = new SqlCommand("UPDATE attendanceManagement_tbl SET status = 'Absent' WHERE user_id = @user_id AND date = @date", con))
+                    {
+                        cmd.Parameters.AddWithValue("@user_id", userId);
+                        cmd.Parameters.AddWithValue("@date", DateTime.Now.ToString("yyyy-MM-dd"));
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response.Write("<script>alert('" + ex.Message + "');</script>");
             }
         }
     }

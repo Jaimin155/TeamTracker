@@ -56,7 +56,7 @@
                         </div>
                         <div class="row justify-content-center">
                             <div class="col-6 d-flex">
-                                <asp:Button CssClass="btn btn-mx btn-block btn-primary" ID="Button2" runat="server" Text="Punch Out" OnClick="Button2_Click" />
+                                <asp:Button CssClass="btn btn-mx btn-block btn-danger" ID="Button2" runat="server" Text="Punch Out" OnClick="Button2_Click" />
                             </div>
                         </div>
                     </div>

@@ -201,8 +201,22 @@
                             </div>
                         </div>
                         <div class="row">
+                            <asp:SqlDataSource ID="SqlDataSource1" runat="server" ConnectionString='<%$ ConnectionStrings:emsDBConnectionString %>' SelectCommand="SELECT * FROM [attendanceManagement_tbl] WHERE ([user_id] = @user_id)">
+                                <SelectParameters>
+                                    <asp:SessionParameter SessionField="username" Name="user_id" Type="String"></asp:SessionParameter>
+
+                                </SelectParameters>
+                            </asp:SqlDataSource>
                             <div class="col">
-                                <asp:GridView class="table table-striped table-bordered" ID="GridView1" runat="server"></asp:GridView>
+                                <asp:GridView class="table table-striped table-bordered" ID="GridView1" runat="server" AutoGenerateColumns="False" DataKeyNames="user_id,date" DataSourceID="SqlDataSource1">
+                                    <Columns>
+                                        <asp:BoundField DataField="date" HeaderText="Date" ReadOnly="True" SortExpression="date"></asp:BoundField>
+                                        <asp:BoundField DataField="punchIn_time" HeaderText="PunchedIn Time" SortExpression="punchIn_time"></asp:BoundField>
+                                        <asp:BoundField DataField="punchOut_time" HeaderText="PunchedOut Time" SortExpression="punchOut_time"></asp:BoundField>
+                                        <asp:BoundField DataField="status" HeaderText="Status" SortExpression="status"></asp:BoundField>
+                                        <asp:BoundField DataField="overtime" HeaderText="Overtime" SortExpression="overtime"></asp:BoundField>
+                                    </Columns>
+                                </asp:GridView>
                             </div>
                         </div>
                     </div>

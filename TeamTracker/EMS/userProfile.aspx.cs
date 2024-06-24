@@ -29,6 +29,7 @@ namespace TeamTracker.EMS
                         getUserData();
                     }
                 }
+                GridView1.DataBind();
             }
             catch (Exception ex) 
             {
@@ -75,6 +76,7 @@ namespace TeamTracker.EMS
                 TextBox5.Text = dt.Rows[0]["full_address"].ToString();
                 TextBox9.Text = dt.Rows[0]["password"].ToString();
                 Label1.Text = dt.Rows[0]["account_status"].ToString().Trim();
+                GridView1.DataBind();
 
             }
             catch (Exception ex)
@@ -128,6 +130,7 @@ namespace TeamTracker.EMS
                 {
                     Response.Write("<script>alert('Invalid Entry!');</script>");
                 }
+                GridView1.DataBind();
             }
             catch (Exception ex)
             {

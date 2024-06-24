@@ -33,7 +33,6 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <asp:TextBox CssClass="form-control" ID="TextBox1" runat="server" placeholder="Employee Id"></asp:TextBox>
-                                        <asp:Button ID="Button1" runat="server" Text="Go" CssClass="btn btn-outline-primary" OnClick="true" />
                                     </div>
                                 </div>
                             </div>
@@ -46,12 +45,34 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6">
-                                <label>Working Days</label>
+                                <label>From Date</label>
                                 <div class="form-group">
-                                    <asp:TextBox CssClass="form-control" ID="TextBox3" runat="server" placeholder="Working Days" ReadOnly="true"></asp:TextBox>
+                                    <asp:TextBox CssClass="form-control" ID="TextBox7" runat="server" placeholder="Date" TextMode="Date"></asp:TextBox>
                                 </div>
                             </div>
                             <div class="col-md-6">
+                                <label>To Date</label>
+                                <div class="form-group">
+                                    <asp:TextBox CssClass="form-control" ID="TextBox6" runat="server" placeholder="Date" TextMode="Date"></asp:TextBox>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Total Worked Days</label>
+                                <div class="form-group">
+                                    <asp:TextBox CssClass="form-control" ID="TextBox3" runat="server" placeholder="Worked Days" ReadOnly="true"></asp:TextBox>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label>Overtime Hour</label>
+                                <div class="form-group">
+                                    <asp:TextBox CssClass="form-control" ID="TextBox5" runat="server" placeholder="Overtime" ReadOnly="true"></asp:TextBox>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
                                 <label>Salary</label>
                                 <div class="form-group">
                                     <asp:TextBox CssClass="form-control" ID="TextBox4" runat="server" placeholder="Salary" ReadOnly="true"></asp:TextBox>
@@ -59,12 +80,12 @@
                             </div>
                         </div>
                         <br />
-                        <div class="row">
+                        <div class="row justify-content-center">
                             <div class="col-5 ">
-                                <asp:Button ID="Button2" runat="server" Text="Paid" CssClass="btn btn-mx btn-block btn-outline-warning" />
+                                <asp:Button ID="Button1" runat="server" Text="Fetch" CssClass="btn btn-mx btn-block btn-primary" OnClick="Button1_Click" />
                             </div>
                             <div class="col-5">
-                                <asp:Button ID="Button3" runat="server" Text="Add Bonus" CssClass="btn btn-mx btn-block btn-outline-primary" />
+                                <asp:Button ID="Button2" runat="server" Text="Paid" CssClass="btn btn-mx btn-block btn-warning" OnClick="Button2_Click" />
                             </div>
                         </div>
                     </div>
@@ -78,7 +99,7 @@
                         <div class="row">
                             <div class="col">
                                 <center>
-                                    <h4>All Employees List</h4>
+                                    <h4>All Previous Records</h4>
                                 </center>
                             </div>
                         </div>
@@ -88,8 +109,17 @@
                             </div>
                         </div>
                         <div class="row">
+                            <asp:SqlDataSource ID="SqlDataSource1" runat="server" ConnectionString='<%$ ConnectionStrings:emsDBConnectionString %>' SelectCommand="SELECT * FROM [previous_record]"></asp:SqlDataSource>
                             <div class="col">
-                                <asp:GridView class="table table-striped table-bordered dt-responsive" ID="GridView1" runat="server"></asp:GridView>
+                                <asp:GridView class="table table-striped table-bordered" ID="GridView1" runat="server" AutoGenerateColumns="False" DataSourceID="SqlDataSource1">
+                                    <Columns>
+                                        <asp:BoundField DataField="user_id" HeaderText="Employee ID" SortExpression="user_id"></asp:BoundField>
+                                        <asp:BoundField DataField="fullname" HeaderText="Name" SortExpression="fullname"></asp:BoundField>
+                                        <asp:BoundField DataField="fromDate" HeaderText="Date(From)" SortExpression="fromDate"></asp:BoundField>
+                                        <asp:BoundField DataField="toDate" HeaderText="Date(To)" SortExpression="toDate"></asp:BoundField>
+                                        <asp:BoundField DataField="salary" HeaderText="Salary" SortExpression="salary"></asp:BoundField>
+                                    </Columns>
+                                </asp:GridView>
                             </div>
                         </div>
                     </div>
